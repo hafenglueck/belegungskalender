@@ -87,7 +87,7 @@
     </div>
     <div id="status">Der Kalender wird geladen…</div>
     <section id="calendar" class="months"></section>
-    <p class="note">Diagonal markierte Tage zeigen Wechselmöglichkeiten: grün/rot = Anreise, rot/grün = Abreise.</p>
+    <p class="note">Tage mit gleichzeitigem Gästewechsel (Abreise und neue Anreise am selben Tag) werden als belegt angezeigt.</p>
     <footer class="footer">
       <div>Synchronisiert mit Airbnb, Booking.com und FeWo-direkt.</div>
       <div style="margin-top:8px"><a href="https://hafengluck-moderne-ferienwohnung-direkt-am-hafen.jimdosite.com/impressum" target="_blank" rel="noopener">Impressum</a> · <a href="https://hafengluck-moderne-ferienwohnung-direkt-am-hafen.jimdosite.com/datenschutz" target="_blank" rel="noopener">Datenschutz</a></div>
@@ -153,6 +153,7 @@
         cell.innerHTML = `<span>${day}</span>`;
         if(+stripTime(d) === +today) cell.classList.add('today');
         if(d < today){ cell.classList.add('past'); }
+        else if(isArrivalDay(iso, events) && isDepartureDay(iso, events)){ cell.classList.add('booked'); }
         else if(isArrivalDay(iso, events)){ cell.classList.add('arrival'); }
         else if(isDepartureDay(iso, events)){ cell.classList.add('departure'); }
         else if(isBookedNight(iso, events)){ cell.classList.add('booked'); }
@@ -166,7 +167,7 @@
     // Buchungslogik: iCal-Enddatum ist der Abreisetag und selbst nicht mehr als Nacht belegt.
     function isBookedNight(date, events){ return events.some(e => date >= e.start && date < e.end); }
     function isArrivalDay(date, events){ return events.some(e => date === e.start); }
-    function isDepartureDay(date, events){ return events.some(e => date === e.end) && !isArrivalDay(date, events); }
+    function isDepartureDay(date, events){ return events.some(e => date === e.end); }
     function toISO(d){ const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
     function stripTime(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
     function escapeHtml(str){ return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
