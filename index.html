@@ -3,230 +3,375 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Verfügbarkeitskalender</title>
+  <title>Verfügbarkeitskalender - Hafenglück</title>
+  <meta name="description" content="Verfügbarkeitskalender der Ferienwohnung Hafenglück." />
   <style>
     :root{
-      --bg:#f7f8fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
-      --free:#dff7e8; --free-border:#77c995;
-      --booked:#ffd9d9; --booked-border:#e57373;
-      --change:#fff1bd; --change-border:#e6b93f;
-      --today:#dbeafe; --accent:#1f6feb;
-      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --bg:#f7fafb;
+      --card:#ffffff;
+      --ink:#1b3448;
+      --muted:#6f8290;
+      --line:#e1e9ee;
+      --sea:#0f6b78;
+      --sea-dark:#0a4e5a;
+      --free:#2f9e44;
+      --booked:#d64545;
+      --change:#f2c94c;
+      --past:#edf1f4;
+      --shadow:0 14px 38px rgba(25,55,75,.10);
+      --radius:20px;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1120px;margin:0 auto;padding:24px 14px 48px}
-    header{background:linear-gradient(135deg,#ffffff,#eef5ff);border:1px solid #e5e7eb;border-radius:22px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}
-    h1{margin:0 0 8px;font-size:clamp(1.7rem,4vw,2.6rem)}
-    .sub{margin:0;color:var(--muted);line-height:1.5}
-    .toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:18px 0;flex-wrap:wrap}
-    .btn{border:1px solid #d1d5db;background:#fff;border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:650;color:var(--text);box-shadow:0 3px 12px rgba(15,23,42,.04)}
-    .btn:hover{border-color:var(--accent)}
-    .month-title{font-size:1.2rem;font-weight:800;padding:0 8px}
-    .legend{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;color:var(--muted);font-size:.95rem}
-    .legend span{display:inline-flex;align-items:center;gap:6px}
-    .dot{width:15px;height:15px;border-radius:4px;border:1px solid #aaa;display:inline-block}
-    .free{background:var(--free);border-color:var(--free-border)}
-    .booked{background:var(--booked);border-color:var(--booked-border)}
-    .change{background:var(--change);border-color:var(--change-border)}
-    .today-dot{background:var(--today);border-color:#93c5fd}
-    .status{margin:12px 0;color:var(--muted);font-size:.95rem;min-height:24px}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-    .month{background:var(--card);border:1px solid #e5e7eb;border-radius:22px;padding:16px;box-shadow:var(--shadow)}
-    .month h2{margin:0 0 12px;font-size:1.15rem;text-transform:capitalize}
-    .weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    .weekdays div{text-align:center;color:var(--muted);font-size:.82rem;font-weight:700;padding-bottom:4px}
-    .day{min-height:58px;border:1px solid #e5e7eb;border-radius:14px;padding:7px;background:#fff;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
-    .day.empty{border:none;background:transparent}
-    .num{font-weight:800;font-size:.92rem}
-    .label{font-size:.72rem;line-height:1.05;color:#374151}
-    .day.free{background:var(--free);border-color:var(--free-border)}
-    .day.booked{background:var(--booked);border-color:var(--booked-border)}
-    .day.change{background:var(--change);border-color:var(--change-border)}
-    .day.today{outline:3px solid #93c5fd}
-    .note{margin-top:18px;padding:14px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:18px;color:var(--muted);line-height:1.45}
-    @media (max-width:760px){.grid{grid-template-columns:1fr}.day{min-height:52px;padding:6px}.label{font-size:.68rem}header{padding:18px}.toolbar{justify-content:center}.month-title{width:100%;text-align:center;order:-1}}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#eef8fa 0%,var(--bg) 260px,#fff 100%);
+      color:var(--ink);
+    }
+    .page{
+      width:min(760px, calc(100% - 28px));
+      margin:0 auto;
+      padding:34px 0 28px;
+    }
+    header{
+      text-align:center;
+      padding:18px 0 20px;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(28px,5vw,42px);
+      line-height:1.12;
+      letter-spacing:-.035em;
+      color:var(--sea-dark);
+    }
+    .intro{
+      margin:12px auto 0;
+      max-width:520px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .controls{
+      padding:14px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:16px;
+    }
+    .controls strong{font-size:15px;color:var(--sea-dark)}
+    .buttons{display:flex;gap:8px}
+    button{
+      border:1px solid #cfe2e8;
+      background:#f3fafb;
+      color:var(--sea-dark);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+    }
+    button.primary{background:var(--sea);border-color:var(--sea);color:#fff}
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:0 0 16px;
+      justify-content:center;
+    }
+    .legend span{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:13px;
+      color:#314c60;
+    }
+    .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+    .dot.free{background:var(--free)}
+    .dot.booked{background:var(--booked)}
+    .dot.change{background:var(--change)}
+    .dot.past{background:#b9c4cc}
+    #calendar{display:grid;gap:16px}
+    .month{overflow:hidden}
+    .month-title{
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      font-weight:800;
+      font-size:19px;
+      background:linear-gradient(180deg,#fff,#f8fbfc);
+      text-align:center;
+      color:var(--sea-dark);
+    }
+    .weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr)}
+    .weekdays div{
+      padding:11px 4px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+    }
+    .day{
+      min-height:56px;
+      padding:7px 5px;
+      border-top:1px solid #eef3f6;
+      border-left:1px solid #eef3f6;
+      text-align:right;
+      font-weight:800;
+      position:relative;
+    }
+    .day:nth-child(7n+1){border-left:none}
+    .day.empty{background:#fbfdfe}
+    .day small{
+      display:block;
+      margin-top:4px;
+      font-size:10px;
+      line-height:1.05;
+      font-weight:800;
+      opacity:.82;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .day.free{background:rgba(47,158,68,.10);color:#1f7a36}
+    .day.booked{background:rgba(214,69,69,.15);color:#a82e2e}
+    .day.changeover{background:rgba(242,201,76,.42);color:#806100}
+    .day.past{background:var(--past);color:#8a98a2}
+    .status{
+      margin:16px 0 0;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      text-align:center;
+    }
+    .status.ok{color:#246d3b}.status.error{color:#9b2d2d;background:#fff5f5;border-color:#ffd7d7}
+    footer{
+      margin:20px 0 0;
+      padding:16px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      text-align:center;
+    }
+    footer a{color:var(--sea-dark);font-weight:800;text-decoration:none}
+    footer a:hover{text-decoration:underline}
+    @media(max-width:560px){
+      .page{width:min(100% - 20px, 760px);padding-top:22px}
+      .controls{display:block;text-align:center}
+      .buttons{margin-top:12px;justify-content:center}
+      button{flex:1}
+      .day{min-height:48px;font-size:14px;padding:6px 4px}
+      .day small{font-size:9px}
+      .legend{justify-content:flex-start}
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
+  <div class="page">
     <header>
-      <h1>Verfügbarkeitskalender</h1>
-      <p class="sub">Hier sehen Sie die aktuelle Belegung. An gelben Wechseltagen ist eine neue Anreise grundsätzlich möglich, weil am selben Tag eine Abreise stattfindet.</p>
-      <div class="legend">
-        <span><i class="dot free"></i> Frei</span>
-        <span><i class="dot booked"></i> Belegt</span>
-        <span><i class="dot change"></i> Abreise / Anreise möglich</span>
-        <span><i class="dot today-dot"></i> Heute</span>
-      </div>
+      <h1>Verfügbarkeitskalender - Hafenglück</h1>
+      <p class="intro">Prüfen Sie hier die aktuelle Verfügbarkeit unserer Ferienwohnung.</p>
     </header>
 
-    <section class="toolbar" aria-label="Kalendernavigation">
-      <button class="btn" id="prev">← Vorherige Monate</button>
-      <div class="month-title" id="rangeTitle"></div>
-      <button class="btn" id="next">Nächste Monate →</button>
+    <section class="controls card" aria-label="Kalendernavigation">
+      <strong id="rangeLabel">Kalender</strong>
+      <div class="buttons">
+        <button id="prevBtn" type="button">← Zurück</button>
+        <button id="nextBtn" class="primary" type="button">Weiter →</button>
+      </div>
     </section>
 
-    <div class="status" id="status">Kalender wird geladen …</div>
-    <section class="grid" id="calendar"></section>
-    <p class="note">Hinweis: Die Kalenderdaten kommen aus Booking.com, Airbnb und FeWo-direkt per iCal. Die Aktualisierung erfolgt automatisch, aber je nach Anbieter mit Verzögerung und nicht in Echtzeit.</p>
-  </main>
+    <nav class="legend" aria-label="Legende">
+      <span><i class="dot free"></i> Frei</span>
+      <span><i class="dot booked"></i> Belegt</span>
+      <span><i class="dot change"></i> An-/Abreise</span>
+      <span><i class="dot past"></i> Vergangen</span>
+    </nav>
+
+    <main id="calendar" aria-live="polite"></main>
+
+    <div id="status" class="status">Kalender werden geladen …</div>
+
+    <footer class="card">
+      Synchronisiert mit Airbnb, Booking.com und FeWo-direkt. Änderungen können zeitverzögert erscheinen.<br>
+      <span id="updated">Stand wird geladen …</span><br>
+      <a href="https://hafengluck-moderne-ferienwohnung-direkt-am-hafen.jimdosite.com/impressum" target="_blank" rel="noopener">Impressum</a>
+      ·
+      <a href="https://hafengluck-moderne-ferienwohnung-direkt-am-hafen.jimdosite.com/datenschutz" target="_blank" rel="noopener">Datenschutz</a>
+    </footer>
+  </div>
 
 <script>
-  // Deine iCal-Links:
-  const ICAL_URLS = [
-    "https://ical.booking.com/v1/export?t=62c6e6f8-58ab-4784-818e-df71780091f2",
-    "https://www.airbnb.de/calendar/ical/1653748270213925240.ics?t=e4da4da942bf4692bfa6d89796eb0246",
-    "https://www.fewo-direkt.de/icalendar/5822b17647754b61a796faad4975b25c.ics?nonTentative"
-  ];
+const CALENDARS = [
+  { name: "Booking.com", url: "https://ical.booking.com/v1/export?t=62c6e6f8-58ab-4784-818e-df71780091f2" },
+  { name: "Airbnb", url: "https://www.airbnb.de/calendar/ical/1653748270213925240.ics?t=e4da4da942bf4692bfa6d89796eb0246" },
+  { name: "FeWo-direkt", url: "https://www.fewo-direkt.de/icalendar/5822b17647754b61a796faad4975b25c.ics?nonTentative" }
+];
 
-  // Kostenloser CORS-Proxy für Browser-Zugriff auf iCal-Dateien.
-  // Falls ein Proxy später ausfällt, kann diese Zeile gegen einen anderen Proxy getauscht werden.
-  const PROXY_PREFIX = "https://api.allorigins.win/raw?url=";
+const MONTHS_VISIBLE = 12;
+const PROXIES = [
+  url => url,
+  url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+  url => "https://corsproxy.io/?" + encodeURIComponent(url)
+];
 
-  const MONTHS_TO_SHOW = 2;
-  let offset = 0;
-  let bookings = [];
+const $cal = document.getElementById("calendar");
+const $status = document.getElementById("status");
+const $updated = document.getElementById("updated");
+const $rangeLabel = document.getElementById("rangeLabel");
+let view = startOfMonth(new Date());
+let reservations = [];
 
-  const statusEl = document.getElementById('status');
-  const calEl = document.getElementById('calendar');
-  const titleEl = document.getElementById('rangeTitle');
+function pad(n){ return String(n).padStart(2,"0"); }
+function ymd(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+function addMonths(d,n){ return new Date(d.getFullYear(), d.getMonth()+n, 1); }
+function addDays(d,n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()+n); }
+function parseYMD(s){ return new Date(Number(s.slice(0,4)), Number(s.slice(4,6))-1, Number(s.slice(6,8))); }
 
-  const fmtMonth = new Intl.DateTimeFormat('de-DE', { month:'long', year:'numeric' });
-  const today = stripTime(new Date());
+function unfoldICS(text){
+  return text.replace(/\r\n[ \t]/g, "").replace(/\n[ \t]/g, "").split(/\r?\n/);
+}
 
-  document.getElementById('prev').addEventListener('click', () => { offset -= MONTHS_TO_SHOW; render(); });
-  document.getElementById('next').addEventListener('click', () => { offset += MONTHS_TO_SHOW; render(); });
+function parseICS(text, source){
+  const lines = unfoldICS(text);
+  const events = [];
+  let ev = null;
 
-  function stripTime(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
-  function dateKey(d){ return d.toISOString().slice(0,10); }
-  function addDays(d,n){ const x = new Date(d); x.setDate(x.getDate()+n); return stripTime(x); }
-  function firstOfMonth(base, add=0){ return new Date(base.getFullYear(), base.getMonth()+add, 1); }
-  function lastOfMonth(y,m){ return new Date(y, m+1, 0); }
-
-  async function loadCalendars(){
-    statusEl.textContent = 'Kalender wird geladen …';
-    const all = [];
-    for (const url of ICAL_URLS){
-      try {
-        const res = await fetch(PROXY_PREFIX + encodeURIComponent(url), { cache: 'no-store' });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-        all.push(...parseIcal(text));
-      } catch (err) {
-        console.warn('Kalender konnte nicht geladen werden:', url, err);
-      }
+  for (const line of lines){
+    if (line === "BEGIN:VEVENT") ev = { source };
+    else if (line === "END:VEVENT"){
+      if (ev && ev.start && ev.end && ev.end > ev.start) events.push(ev);
+      ev = null;
+    } else if (ev){
+      const idx = line.indexOf(":");
+      if (idx < 0) continue;
+      const key = line.slice(0, idx).split(";")[0];
+      const value = line.slice(idx + 1).trim();
+      const digits = value.replace(/\D/g, "").slice(0, 8);
+      if (key === "DTSTART" && digits.length === 8) ev.start = parseYMD(digits);
+      if (key === "DTEND" && digits.length === 8) ev.end = parseYMD(digits);
     }
-    bookings = mergeBookings(all);
-    if (bookings.length){
-      statusEl.textContent = 'Aktualisiert: ' + new Date().toLocaleString('de-DE');
-    } else {
-      statusEl.textContent = 'Keine Buchungen geladen. Bitte prüfen Sie die iCal-Links oder den Proxy.';
+  }
+  return events;
+}
+
+async function fetchText(url){
+  let lastError;
+  for (const proxy of PROXIES){
+    const finalUrl = proxy(url);
+    try{
+      const response = await fetch(finalUrl, { cache: "no-store" });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const text = await response.text();
+      if (!/BEGIN:VCALENDAR|BEGIN:VEVENT/.test(text)) throw new Error("Keine iCal-Daten");
+      return text;
+    } catch(e){
+      lastError = e;
     }
-    render();
   }
+  throw lastError;
+}
 
-  function unfoldICS(text){
-    return text.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '').split(/\r?\n/);
-  }
+async function loadCalendars(){
+  const messages = [];
+  const allEvents = [];
 
-  function parseIcal(text){
-    const lines = unfoldICS(text);
-    const events = [];
-    let event = null;
-    for (const line of lines){
-      if (line === 'BEGIN:VEVENT') event = {};
-      else if (line === 'END:VEVENT') {
-        if (event && event.start && event.end) events.push(event);
-        event = null;
-      } else if (event) {
-        if (line.startsWith('DTSTART')) event.start = parseIcalDate(line);
-        if (line.startsWith('DTEND')) event.end = parseIcalDate(line);
-      }
+  for (const calendar of CALENDARS){
+    try{
+      const text = await fetchText(calendar.url);
+      const events = parseICS(text, calendar.name);
+      allEvents.push(...events);
+      messages.push(`${calendar.name}: ${events.length} Einträge`);
+    } catch(e){
+      messages.push(`${calendar.name}: nicht geladen`);
     }
-    return events.filter(e => e.start && e.end && e.end > e.start);
   }
 
-  function parseIcalDate(line){
-    const value = line.split(':').pop().trim();
-    // YYYYMMDD oder YYYYMMDDTHHMMSSZ
-    const y = Number(value.slice(0,4));
-    const m = Number(value.slice(4,6)) - 1;
-    const d = Number(value.slice(6,8));
-    if (!y || isNaN(m) || !d) return null;
-    return new Date(y, m, d);
+  reservations = allEvents.map(e => ({ start: ymd(e.start), end: ymd(e.end), source: e.source }));
+  $status.className = "status " + (allEvents.length ? "ok" : "error");
+  $status.textContent = messages.join(" · ");
+  $updated.textContent = "Letzte Aktualisierung: " + new Date().toLocaleString("de-DE");
+  render();
+}
+
+function statusForDate(date){
+  const today = new Date();
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const key = ymd(date);
+
+  if (date < todayDate) return { cls:"past", label:"Vergangen" };
+
+  let starts = false;
+  let ends = false;
+  let inside = false;
+
+  for (const r of reservations){
+    if (key === r.start) starts = true;
+    if (key === r.end) ends = true;
+    if (key >= r.start && key < r.end) inside = true;
   }
 
-  function mergeBookings(items){
-    const sorted = items.map(b => ({ start: stripTime(b.start), end: stripTime(b.end) }))
-      .sort((a,b) => a.start - b.start);
-    const merged = [];
-    for (const b of sorted){
-      const last = merged[merged.length-1];
-      if (!last || b.start > last.end) merged.push({...b});
-      else if (b.end > last.end) last.end = b.end;
-    }
-    return merged;
+  if (ends && !inside) return { cls:"changeover", label:"Wechsel" };
+  if (ends && inside) return { cls:"booked", label:"Belegt" };
+  if (inside || starts) return { cls:"booked", label: starts ? "Anreise" : "Belegt" };
+  return { cls:"free", label:"Frei" };
+}
+
+function render(){
+  $cal.innerHTML = "";
+  const start = view.toLocaleDateString("de-DE", { month:"long", year:"numeric" });
+  const end = addMonths(view, MONTHS_VISIBLE - 1).toLocaleDateString("de-DE", { month:"long", year:"numeric" });
+  $rangeLabel.textContent = `${start} bis ${end}`;
+  for (let i=0; i<MONTHS_VISIBLE; i++) $cal.appendChild(monthElement(addMonths(view, i)));
+}
+
+function monthElement(first){
+  const month = document.createElement("section");
+  month.className = "month card";
+  const title = first.toLocaleDateString("de-DE", { month:"long", year:"numeric" });
+  month.innerHTML = `
+    <div class="month-title">${title}</div>
+    <div class="weekdays"><div>Mo</div><div>Di</div><div>Mi</div><div>Do</div><div>Fr</div><div>Sa</div><div>So</div></div>
+    <div class="days"></div>
+  `;
+  const days = month.querySelector(".days");
+  const offset = (first.getDay() + 6) % 7;
+  for (let i=0; i<offset; i++){
+    const empty = document.createElement("div");
+    empty.className = "day empty";
+    days.appendChild(empty);
   }
-
-  function statusForDate(d){
-    const key = +stripTime(d);
-    let arrival = false, departure = false, occupiedNight = false;
-    for (const b of bookings){
-      if (+b.start === key) arrival = true;
-      if (+b.end === key) departure = true;
-      // Die Nacht ab diesem Datum ist belegt, wenn d >= Start und d < Ende.
-      if (key >= +b.start && key < +b.end) occupiedNight = true;
-    }
-    if (departure && !occupiedNight) return { cls:'change', text:'Abreise / Anreise' };
-    if (departure && arrival) return { cls:'change', text:'Wechseltag' };
-    if (occupiedNight) return { cls:'booked', text: arrival ? 'Anreise belegt' : 'Belegt' };
-    return { cls:'free', text:'Frei' };
+  const next = addMonths(first, 1);
+  for (let d = new Date(first); d < next; d = addDays(d, 1)){
+    const status = statusForDate(d);
+    const day = document.createElement("div");
+    day.className = "day " + status.cls;
+    day.innerHTML = `${d.getDate()}<small>${status.label}</small>`;
+    days.appendChild(day);
   }
+  return month;
+}
 
-  function render(){
-    const base = firstOfMonth(new Date(), offset);
-    const months = Array.from({length:MONTHS_TO_SHOW}, (_,i) => firstOfMonth(base, i));
-    titleEl.textContent = months.map(m => fmtMonth.format(m)).join(' – ');
-    calEl.innerHTML = '';
-    months.forEach(m => calEl.appendChild(renderMonth(m)));
-  }
+document.getElementById("prevBtn").addEventListener("click", () => { view = addMonths(view, -1); render(); });
+document.getElementById("nextBtn").addEventListener("click", () => { view = addMonths(view, 1); render(); });
 
-  function renderMonth(monthDate){
-    const y = monthDate.getFullYear();
-    const m = monthDate.getMonth();
-    const box = document.createElement('article');
-    box.className = 'month';
-    box.innerHTML = `<h2>${fmtMonth.format(monthDate)}</h2>`;
-
-    const weekdays = document.createElement('div');
-    weekdays.className = 'weekdays';
-    ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(w => {
-      const el = document.createElement('div'); el.textContent = w; weekdays.appendChild(el);
-    });
-    box.appendChild(weekdays);
-
-    const days = document.createElement('div');
-    days.className = 'days';
-    const first = new Date(y,m,1);
-    const startPad = (first.getDay() + 6) % 7;
-    for (let i=0;i<startPad;i++){
-      const empty = document.createElement('div'); empty.className = 'day empty'; days.appendChild(empty);
-    }
-    const last = lastOfMonth(y,m).getDate();
-    for (let day=1; day<=last; day++){
-      const d = new Date(y,m,day);
-      const st = statusForDate(d);
-      const el = document.createElement('div');
-      el.className = `day ${st.cls}` + (dateKey(d) === dateKey(today) ? ' today' : '');
-      el.innerHTML = `<div class="num">${day}</div><div class="label">${st.text}</div>`;
-      days.appendChild(el);
-    }
-    box.appendChild(days);
-    return box;
-  }
-
-  loadCalendars();
+render();
+loadCalendars();
 </script>
 </body>
 </html>
